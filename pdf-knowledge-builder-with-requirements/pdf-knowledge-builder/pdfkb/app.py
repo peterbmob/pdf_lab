@@ -10,6 +10,10 @@ from pdfkb.summarizer import summarize_for_teaching
 from pdfkb.proposer import generate_research_application
 from pdfkb.bookbuilder import save_markdown, write_toc
 
+
+st.cache_data.clear()
+st.cache_resource.clear()
+
 # ---------------------------------------------------------
 # Streamlit Page Config
 # ---------------------------------------------------------
