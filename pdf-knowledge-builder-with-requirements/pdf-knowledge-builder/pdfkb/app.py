@@ -82,7 +82,7 @@ if "chunks" in st.session_state:
     with col1: 
         if st.button("📘 Summarize PDF"):
             with st.spinner("Summarizing entire PDF..."):
-                summary = summarize_for_teaching(
+                summary = summarize(
                     st.session_state["chunks"],
                     model=llm_model
                 )
