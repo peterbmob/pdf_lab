@@ -83,12 +83,6 @@ with st.sidebar:
         st.session_state.clear()
         st.experimental_rerun()
 
-    emb_model = st.text_input("Embedding model (if needed)", "nomic-embed-text")
-
-    if st.button("Reset App"):
-        st.session_state.clear()
-        st.experimental_rerun()
-
 # ---------------------------------------------------------
 # If PDFs uploaded
 # ---------------------------------------------------------
