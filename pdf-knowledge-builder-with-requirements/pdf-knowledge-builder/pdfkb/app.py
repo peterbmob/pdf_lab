@@ -8,34 +8,32 @@ from pdfkb.proposer import generate_research_application
 from pdfkb.bookbuilder import save_markdown, write_toc
 
 
+
+import subprocess, json
+
 def scan_ollama_models():
     """
-    Scans the local Ollama models directory and returns a list of model names.
-    Works on all OSes where Ollama is installed.
+    Reads installed models directly from Ollama using:
+        ollama list --json
+    This works on Linux, macOS, Windows, system-service, user-mode, and custom paths.
     """
-    model_paths = [
-        os.path.expanduser("~/.ollama/models"),         # Linux/macOS
-        os.path.expanduser("~/Library/Ollama/models"),  # macOS alt
-        os.path.expanduser("~\\AppData\\Local\\Ollama\\models")  # Windows
-    ]
+    try:
+        result = subprocess.run(
+            ["ollama", "list", "--json"],
+            capture_output=True,
+            text=True
+        )
 
-    models = set()
+        # Parse JSON output
+        items = json.loads(result.stdout)
 
-    for path in model_paths:
-        if not os.path.exists(path):
-            continue
+        # Extract model names
+        return [m["name"] for m in items]
 
-        for root, dirs, files in os.walk(path):
-            for f in files:
-                if f.endswith(".bin") or f.endswith(".blob"):
-                    name = os.path.splitext(f)[0]
-                    models.add(name)
+    except Exception as e:
+        print("Model scan failed:", e)
+        return ["llama3", "mistral", "qwen2.5"]  # safe fallback
 
-    # fallback defaults if no models found
-    if not models:
-        return ["llama3", "mistral", "qwen2.5", "phi3"]
-
-    return sorted(models)
 
 
 # ---------------------------------------------------------
