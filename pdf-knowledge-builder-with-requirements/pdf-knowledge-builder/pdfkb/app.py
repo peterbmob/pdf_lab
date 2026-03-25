@@ -53,16 +53,7 @@ st.write("Turn PDFs into teaching material, summaries, and research applications
 # ---------------------------------------------------------
 # Sidebar Settings
 # ---------------------------------------------------------
-with st.sidebar:
-    st.header("Settings")
-
-    uploaded_pdfs = st.file_uploader(
-        "Upload PDF file(s)",
-        type=["pdf"],
-        accept_multiple_files=True
-    )
-
-    
+  
 with st.sidebar:
     st.header("Settings")
 
