@@ -9,31 +9,35 @@ from pdfkb.bookbuilder import save_markdown, write_toc
 
 
 
-import subprocess, json
+
+import subprocess
 
 def scan_ollama_models():
     """
-    Reads installed models directly from Ollama using:
-        ollama list --json
-    This works on Linux, macOS, Windows, system-service, user-mode, and custom paths.
+    Returns a list of installed Ollama model names by parsing `ollama list`.
+    This works because Ollama does NOT support JSON output for `ollama list`.
     """
     try:
         result = subprocess.run(
-            ["ollama", "list", "--json"],
+            ["ollama", "list"],
             capture_output=True,
             text=True
         )
 
-        # Parse JSON output
-        items = json.loads(result.stdout)
+        lines = result.stdout.strip().split("\n")
 
-        # Extract model names
-        
-        return [m["name"] for m in items]
-        
+        models = []
+        for line in lines[1:]:  # skip header
+            parts = line.split()
+            if len(parts) > 0:
+                models.append(parts[0])  # first column = model name
+
+        return models if models else ["llama3"]
+
     except Exception as e:
-        print("Model scan failed:", e)
-        return ["llama3", "mistral", "qwen2.5"]  # safe fallback
+        print("Error listing Ollama models:", e)
+        return ["llama3", "mistral"]
+
 
 
 
