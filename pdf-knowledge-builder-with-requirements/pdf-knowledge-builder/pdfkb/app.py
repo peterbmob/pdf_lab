@@ -78,9 +78,22 @@ if "chunks" in st.session_state:
 
     st.header("Generate Content")
 
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3, col4 = st.columns(4)
+    with col1: 
+        if st.button("📘 Summarize PDF"):
+            with st.spinner("Summarizing entire PDF..."):
+                summary = summarize_for_teaching(
+                    st.session_state["chunks"],
+                    model=llm_model
+                )
+            st.session_state["output"] = summary
+            st.success("✅ PDF summarized!")
 
-    with col1:
+        if "output" in st.session_state:
+            st.subheader("📄 Summary Output")
+            st.markdown(st.session_state["output"])
+
+    with col2:
         if st.button("📘 Generate Teaching Chapter"):
             with st.spinner("Generating teaching material..."):
                 chapter = summarize_for_teaching(
@@ -90,7 +103,7 @@ if "chunks" in st.session_state:
             st.session_state["output"] = chapter
             st.success("✅ Teaching chapter created!")
 
-    with col2:
+    with col3:
         if st.button("📄 Generate Research Application"):
             with st.spinner("Generating research application..."):
                 proposal = generate_research_application(
@@ -100,7 +113,7 @@ if "chunks" in st.session_state:
             st.session_state["output"] = proposal
             st.success("✅ Research application created!")
 
-    with col3:
+    with col4:
         if st.button("📚 Save as Jupyter Book Chapter"):
             text = st.session_state.get("output", "")
             if text.strip() == "":
