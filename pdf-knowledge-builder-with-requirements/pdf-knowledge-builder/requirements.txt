@@ -1,0 +1,11 @@
+
+streamlit
+pypdf
+pdfplumber
+Pillow
+pytesseract
+faiss-cpu
+langchain-core
+langchain-community
+langchain-text-splitters
+python-dotenv
