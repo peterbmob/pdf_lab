@@ -2,6 +2,15 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from .llm import get_llm
 
+SUMMARY_TEMPLATE = """
+You are generating a structured summary of a document.
+
+Use ONLY the provided content to create a clear, pedagogical, well-organized summary
+
+-----------------------------------
+CONTENT TO ANALYZE:
+{content}
+"""
 
 TEACHING_SUMMARY_TEMPLATE = """
 You are generating a structured teaching chapter for a university-level course.
@@ -66,6 +75,35 @@ def summarize_for_teaching(chunks, model: str = "llama3", temperature: float = 0
 
     # Prepare prompt template
     prompt = PromptTemplate.from_template(TEACHING_SUMMARY_TEMPLATE)
+
+    # Compose chain
+    chain = prompt | llm | StrOutputParser()
+
+    # Merge chunks into a single context block
+    content = "\n\n".join(chunks)
+
+    # Generate chapter
+    md_chapter = chain.invoke({"content": content})
+
+    return md_chapter
+
+def summarize(chunks, model: str = "llama3", temperature: float = 0.2):
+    """
+    Summarize a PDF-derived text.
+
+    Args:
+        chunks (list[str]): List of RAG chunks from loader + chunker.
+        model (str): Ollama LLM to use (e.g., "llama3", "mistral", "qwen2.5").
+        temperature (float): LLM temperature.
+
+    Returns:
+        str: Markdown chapter text.
+    """
+    # Load LLM
+    llm = get_llm(model=model, temperature=temperature)
+
+    # Prepare prompt template
+    prompt = PromptTemplate.from_template(SUMMARY_TEMPLATE)
 
     # Compose chain
     chain = prompt | llm | StrOutputParser()
