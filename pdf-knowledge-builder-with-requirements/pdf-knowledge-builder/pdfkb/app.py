@@ -76,24 +76,6 @@ if uploaded_pdfs:
         st.success("✅ Ready for summarization or generation!")
 
 
-if uploaded_pdfs:
-    if st.button("📘 Summarize PDF"):
-        if "chunks" not in st.session_state:
-            st.warning("Please click 'Process PDFs' first.")
-        else:
-            with st.spinner("Summarizing PDF..."):
-                summary = summarize_for_teaching(
-                    st.session_state["chunks"],
-                    model=llm_model
-                )
-            st.session_state["output"] = summary
-            st.success("✅ PDF summarized!")
-
-
-if "output" in st.session_state:
-    st.subheader("📄 Summary Output")
-    st.markdown(st.session_state["output"])
-
 # ---------------------------------------------------------
 # Display Options: Summaries, Proposals, Jupyter Book
 # ---------------------------------------------------------
@@ -155,4 +137,22 @@ if "chunks" in st.session_state:
 # ---------------------------------------------------------
 if "output" in st.session_state:
     st.header("📄 Generated Output")
+    st.markdown(st.session_state["output"])
+
+if uploaded_pdfs:
+    if st.button("📘 Summarize PDF"):
+        if "chunks" not in st.session_state:
+            st.warning("Please click 'Process PDFs' first.")
+        else:
+            with st.spinner("Summarizing PDF..."):
+                summary = summarize_for_teaching(
+                    st.session_state["chunks"],
+                    model=llm_model
+                )
+            st.session_state["output"] = summary
+            st.success("✅ PDF summarized!")
+
+
+if "output" in st.session_state:
+    st.subheader("📄 Summary Output")
     st.markdown(st.session_state["output"])
