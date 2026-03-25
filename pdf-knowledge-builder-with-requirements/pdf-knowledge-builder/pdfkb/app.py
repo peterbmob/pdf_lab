@@ -28,8 +28,9 @@ def scan_ollama_models():
         items = json.loads(result.stdout)
 
         # Extract model names
+        print(m):
         return [m["name"] for m in items]
-
+        
     except Exception as e:
         print("Model scan failed:", e)
         return ["llama3", "mistral", "qwen2.5"]  # safe fallback
