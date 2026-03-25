@@ -7,6 +7,37 @@ from pdfkb.summarizer import summarize_for_teaching
 from pdfkb.proposer import generate_research_application
 from pdfkb.bookbuilder import save_markdown, write_toc
 
+
+def scan_ollama_models():
+    """
+    Scans the local Ollama models directory and returns a list of model names.
+    Works on all OSes where Ollama is installed.
+    """
+    model_paths = [
+        os.path.expanduser("~/.ollama/models"),         # Linux/macOS
+        os.path.expanduser("~/Library/Ollama/models"),  # macOS alt
+        os.path.expanduser("~\\AppData\\Local\\Ollama\\models")  # Windows
+    ]
+
+    models = set()
+
+    for path in model_paths:
+        if not os.path.exists(path):
+            continue
+
+        for root, dirs, files in os.walk(path):
+            for f in files:
+                if f.endswith(".bin") or f.endswith(".blob"):
+                    name = os.path.splitext(f)[0]
+                    models.add(name)
+
+    # fallback defaults if no models found
+    if not models:
+        return ["llama3", "mistral", "qwen2.5", "phi3"]
+
+    return sorted(models)
+
+
 # ---------------------------------------------------------
 # Streamlit Page Config
 # ---------------------------------------------------------
@@ -31,7 +62,36 @@ with st.sidebar:
         accept_multiple_files=True
     )
 
-    llm_model = st.text_input("LLM model (Ollama)", "llama3")
+    
+with st.sidebar:
+    st.header("Settings")
+
+    uploaded_pdfs = st.file_uploader(
+        "Upload PDF file(s)",
+        type=["pdf"],
+        accept_multiple_files=True
+    )
+
+    st.subheader("Select LLM Model")
+
+    available_models = scan_ollama_models()
+    llm_model = st.selectbox(
+        "Available Ollama models:",
+        available_models,
+        index=0
+    )
+
+    st.subheader("Embedding Model")
+    emb_model = st.selectbox(
+        "Embedding model:",
+        ["nomic-embed-text", "mistral", "llama3"],
+        index=0
+    )
+
+    if st.button("Reset App"):
+        st.session_state.clear()
+        st.experimental_rerun()
+
     emb_model = st.text_input("Embedding model (if needed)", "nomic-embed-text")
 
     if st.button("Reset App"):
